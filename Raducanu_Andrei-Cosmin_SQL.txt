@@ -1,0 +1,544 @@
+--Exercitiile 4 si 5
+
+CREATE TABLE LOCATIE 
+    (id_locatie number(6), 
+    judet varchar2(20) constraint judet_nn not null,
+    localitate varchar2(30) constraint localitate_nn not null,
+    strada varchar2(30) constraint strada_nn not null,
+    numar number(3) constraint numar_nn not null,
+    cod_postal varchar2(6),
+    constraint pk_locatie primary key(id_locatie),
+    check(numar > 0)
+    );
+
+CREATE SEQUENCE SEQUENCE_LOCATIE
+INCREMENT BY 1
+START WITH 0
+MINVALUE 0
+MAXVALUE 100
+NOCYCLE;
+
+
+INSERT INTO LOCATIE VALUES(SEQUENCE_LOCATIE.NEXTVAL, 'sector 4', 'Bucuresti', 'Giurgiului', 109, '050355');
+INSERT INTO LOCATIE VALUES(SEQUENCE_LOCATIE.NEXTVAL, 'sector 5', 'Bucuresti', 'Ogradei', 4, '050325');
+INSERT INTO LOCATIE VALUES(SEQUENCE_LOCATIE.NEXTVAL, 'Cluj', 'Cluj-Napoca', 'Nicolae Titulescu', 14, '400420');
+INSERT INTO LOCATIE VALUES(SEQUENCE_LOCATIE.NEXTVAL, 'Timis', 'Timisoara', 'Motilor', 13, '300200');
+INSERT INTO LOCATIE VALUES(SEQUENCE_LOCATIE.NEXTVAL, 'Constanta', 'Constanta', 'Baba Novac', 12, '900325');
+INSERT INTO LOCATIE VALUES(SEQUENCE_LOCATIE.NEXTVAL, 'sector 5', 'Bucuresti', 'Ogradei', 56, '050355');
+COMMIT;
+
+SELECT* FROM LOCATIE;
+
+-------------------------
+
+CREATE TABLE SERVICES 
+    (id_service number(6),
+    nume_service varchar2(40) constraint nume_service_nn not null,
+    an_infiintare number(4),
+    id_locatie number(6),
+    constraint pk_service primary key(id_service),
+    constraint fk_service_locatie foreign key(id_locatie) references LOCATIE(id_locatie),
+    check (an_infiintare > 1900)
+    );
+    
+CREATE SEQUENCE SEQUENCE_SERVICE
+START WITH 100
+INCREMENT BY 1
+MINVALUE 0
+MAXVALUE 200
+NOCYCLE;
+
+INSERT INTO SERVICES VALUES(SEQUENCE_SERVICE.NEXTVAL, 'Engine-fixers', 2005, 4);
+INSERT INTO SERVICES VALUES(SEQUENCE_SERVICE.NEXTVAL, 'Crazy-Wheel', 1998, 5);
+INSERT INTO SERVICES VALUES(SEQUENCE_SERVICE.NEXTVAL, 'ReadytoGo', 2015, 2);
+INSERT INTO SERVICES VALUES(SEQUENCE_SERVICE.NEXTVAL, 'WheelUp', 2020, 1);
+INSERT INTO SERVICES VALUES(SEQUENCE_SERVICE.NEXTVAL, 'BestService', 1995, 3);
+INSERT INTO SERVICES VALUES(SEQUENCE_SERVICE.NEXTVAL, 'BestService SRL',NULL,  6);
+COMMIT;
+    
+SELECT* FROM SERVICES;    
+
+-------------------------    
+    
+CREATE TABLE JOBS
+    (id_job number(6),
+    nume_job varchar2(30) constraint nume_job_nn not null,
+    salariu_max number(6) constraint salariu_max_nn not null,
+    salariu_min number(6) constraint salariu_min_nn not null,
+    constraint pk_jobs primary key(id_job)
+    );
+
+INSERT INTO JOBS VALUES(500, 'Mecanic', 30000, 9000);
+INSERT INTO JOBS VALUES(501, 'Tinichigiu', 20000, 5000);
+INSERT INTO JOBS VALUES(502, 'Electrician auto', 25000, 6500);
+INSERT INTO JOBS VALUES(503, 'Contabil', 22500, 9300);
+INSERT INTO JOBS VALUES(504, 'Tehnician auto', 35000, 12000);
+INSERT INTO JOBS VALUES(505, 'Manager', 50000, 16000);
+INSERT INTO JOBS VALUES(506, 'Ucenic', 5000, 1000);
+COMMIT;
+
+SELECT* FROM JOBS;    
+    
+-------------------------
+
+CREATE TABLE ANGAJAT 
+    (id_angajat number(6),
+    nume_angajat varchar2(30) constraint nume_angajat_nn not null,
+    prenume_angajat varchar2(30) constraint prenume_angajat_nn not null,
+    salariu number(6) constraint salariu_nn not null,
+    data_angajarii date default sysdate,
+    id_service number(6),
+    id_job number(6),
+    constraint pk_angajat primary key(id_angajat),
+    constraint fk_angajat_service foreign key (id_service) references SERVICES(id_service),
+    constraint fk_angajat_job foreign key(id_job) references JOBS(id_job)
+    );
+    
+INSERT INTO ANGAJAT VALUES(1000, 'Vasile', 'Ionel', 12000, TO_DATE('23/11/2009', 'DD/MM/YYYY'), 102, 500);
+INSERT INTO ANGAJAT VALUES(1001, 'Ionescu', 'Gigel', 10000, TO_DATE('28/10/2003', 'DD/MM/YYYY'), 102, 502);
+INSERT INTO ANGAJAT VALUES(1002, 'Vasilescu', 'Ion', 11550, TO_DATE('11/02/1999', 'DD/MM/YYYY'), 102, 503);
+INSERT INTO ANGAJAT VALUES(1003, 'Popescu', 'Marin', 16000, TO_DATE('19/07/2019','DD/MM/YYYY'), 101, 500);
+INSERT INTO ANGAJAT VALUES(1004, 'Iordache', 'Adrian', 6000, TO_DATE('23/05/2017', 'DD/MM/YYYY'), 101, 501);
+INSERT INTO ANGAJAT VALUES(1005, 'Enescu', 'Alin', 42500, TO_DATE('05/03/2007', 'DD/MM/YYYY'), 101, 505);
+INSERT INTO ANGAJAT VALUES(1006, 'Deculescu', 'Emanuel', 10000, TO_DATE('26/04/2016', 'DD/MM/YYYY'), 103, 503);
+INSERT INTO ANGAJAT VALUES(1007, 'Mircescu', 'Ovidiu', 30000, TO_DATE('28/08/2016', 'DD/MM/YYYY'), 103, 500);
+INSERT INTO ANGAJAT VALUES(1008, 'Sandu', 'Mircea', 7000, TO_DATE('21/12/2019', 'DD/MM/YYYY'), 103, 501);
+INSERT INTO ANGAJAT VALUES(1009, 'Patrascu', 'Dorel', 18550, TO_DATE('13/04/2021', 'DD/MM/YYYY'), 104, 504);
+INSERT INTO ANGAJAT VALUES(1010, 'Davidescu', 'Filip', 10800, TO_DATE('15/02/2021', 'DD/MM/YYYY'), 104, 503);
+INSERT INTO ANGAJAT VALUES(1011, 'Isarescu', 'Iulian', 25000,TO_DATE('29/11/2020', 'DD/MM/YYYY'), 104, 505);
+INSERT INTO ANGAJAT VALUES(1012, 'Pascanu', 'Grigore', 1500,TO_DATE('06/01/1996', 'DD/MM/YYYY'), 105, 506);
+INSERT INTO ANGAJAT VALUES(1013, 'Niculai', 'Radu', 12000, TO_DATE('20/05/2003', 'DD/MM/YYYY'), 105, 501);
+INSERT INTO ANGAJAT VALUES(1014, 'Petrescu', 'Petre', 15500, TO_DATE('5/09/2000', 'DD/MM/YYYY'), 106, 500);
+INSERT INTO ANGAJAT VALUES(1015, 'Enescu', 'Marius', 6500, TO_DATE('27/12/2020', 'DD/MM/YYYY'), 106, 502);
+INSERT INTO ANGAJAT VALUES(1016, 'Nitu', 'David', 15500, TO_DATE('12/07/2000', 'DD/MM/YYYY'), 105, 500);
+COMMIT;
+
+SELECT * FROM ANGAJAT;
+
+-------------------------
+CREATE TABLE CLIENTS
+    (id_client number(6),
+    nume_client varchar2(30) constraint nume_client_nn not null,
+    prenume_client varchar2(30),
+    numar_telefon varchar2(13),
+    constraint pk_client primary key(id_client)
+    );
+INSERT INTO CLIENTS VALUES('10000', 'Raducanu', 'Andrei', '0712345678');
+INSERT INTO CLIENTS VALUES('10001', 'Raducanu', 'Cosmin', '0712345679');
+INSERT INTO CLIENTS VALUES('10002', 'Raducanu', 'Nicusor', '0712345689');
+INSERT INTO CLIENTS VALUES('10003', 'Raducanu', 'Gabriel', '0712345690');
+INSERT INTO CLIENTS VALUES('10004', 'Andrei', 'Cosmin', '0142142142');
+COMMIT;
+
+SELECT* FROM CLIENTS;
+
+-------------------------
+
+CREATE TABLE MASINA 
+    (
+    id_masina number(6),
+    marca varchar(20) constraint marca_nn not null,
+    an_fabricatie number(4) constraint an_fabricatie_nn not null,
+    constraint pk_masina primary key(id_masina),
+    check(an_fabricatie>1960)
+    );
+INSERT INTO MASINA VALUES('10100', 'Audi', '2008');
+INSERT INTO MASINA VALUES('10101', 'BMW', '2012');
+INSERT INTO MASINA VALUES('10102', 'Mercedes-Benz', '2015');
+INSERT INTO MASINA VALUES('10103', 'Skoda', '2006');
+INSERT INTO MASINA VALUES('10104', 'Volkswagen', '1998');
+INSERT INTO MASINA VALUES('10105', 'Afla Romeo', '2002');
+INSERT INTO MASINA VALUES('10106', 'Ford', '2018');
+INSERT INTO MASINA VALUES('10107', 'Fiat', '2017');
+INSERT INTO MASINA VALUES('10108', 'Dacia', '2020');
+INSERT INTO MASINA VALUES('10109', 'Jeep', '2005');
+INSERT INTO MASINA VALUES('10110', 'Tesla', '2021');
+COMMIT;
+
+SELECT* FROM MASINA;
+
+-------------------------
+
+CREATE TABLE PROGRAMARE
+    (id_programare number(6),
+    data_programare date default sysdate,
+    id_client number(6),
+    constraint pk_programare primary key(id_programare),
+    constraint fk_programare_client foreign key(id_client) references CLIENTS(id_client)
+    );
+INSERT INTO PROGRAMARE VALUES('100000', TO_DATE('31/05/2021', 'DD/MM/YYYY'), '10000');
+INSERT INTO PROGRAMARE VALUES('100001', TO_DATE('21/06/2021', 'DD/MM/YYYY'), '10001');
+INSERT INTO PROGRAMARE VALUES('100002', TO_DATE('17/06/2021', 'DD/MM/YYYY'), '10000');
+INSERT INTO PROGRAMARE VALUES('100003', TO_DATE('15/07/2021', 'DD/MM/YYYY'), '10002');
+INSERT INTO PROGRAMARE VALUES('100004', TO_DATE('03/08/2021', 'DD/MM/YYYY'), '10003');
+INSERT INTO PROGRAMARE VALUES('100005', TO_DATE('20/08/2021', 'DD/MM/YYYY'), '10004');
+INSERT INTO PROGRAMARE VALUES('100006', TO_DATE('28/08/2021', 'DD/MM/YYYY'), '10001');
+COMMIT;
+
+SELECT* FROM PROGRAMARE;
+
+-------------------------
+
+CREATE TABLE CONTRACT
+    (id_contract number(6),
+    data_incepere date constraint data_incepere_nn not null,
+    durata number(6,2) constraint durata_nn not null,
+    constraint pk_contract primary key(id_contract)
+    );
+    
+INSERT INTO CONTRACT VALUES('20000', TO_DATE('22/07/2019', 'DD/MM/YYYY'), '3');
+INSERT INTO CONTRACT VALUES('20001', TO_DATE('18/09/2018', 'DD/MM/YYYY'), '3.5');
+INSERT INTO CONTRACT VALUES('20002', TO_DATE('12/11/2020', 'DD/MM/YYYY'), '1.25');
+INSERT INTO CONTRACT VALUES('20003', TO_DATE('05/02/2013', 'DD/MM/YYYY'), '10.5');
+INSERT INTO CONTRACT VALUES('20004', TO_DATE('31/05/2016', 'DD/MM/YYYY'), '6.75');
+INSERT INTO CONTRACT VALUES('20005', TO_DATE('05/02/2013', 'DD/MM/YYYY'), '14');
+
+COMMIT;
+
+SELECT * FROM CONTRACT;
+
+-------------------------
+
+CREATE TABLE FURNIZOR
+    (id_furnizor number(6),
+    nume_furnizor varchar2(40) constraint nume_furnizor_nn not null,
+    valoare number(8) constraint valoare_nn not null,
+    id_contract number(6),
+    constraint pk_furnizor primary key(id_furnizor),
+    constraint fk_furnizor_contract foreign key(id_contract) references CONTRACT(id_contract)
+    );
+    
+INSERT INTO FURNIZOR VALUES('30000', 'Auto Rebel', '1000000', '20000');
+INSERT INTO FURNIZOR VALUES('30001', 'Lipi Impex 2110', '1800000', '20004');
+INSERT INTO FURNIZOR VALUES('30002', 'Unix', '7200000', '20002');
+INSERT INTO FURNIZOR VALUES('30003', 'Renault', '500000', '20003');
+INSERT INTO FURNIZOR VALUES('30004', 'Mercedes-Benz', '350000', '20001');
+COMMIT;
+
+SELECT* FROM FURNIZOR;
+
+-------------------------
+
+CREATE TABLE PIESA
+    (id_piesa number(6),
+    nume_piesa varchar2(35)constraint nume_piesa_nn not null,
+    fabricata_de varchar2(40) constraint fabricata_de_nn not null,
+    id_furnizor number(6),
+    constraint pk_piesa primary key(id_piesa),
+    constraint fk_piesa_furnizor foreign key(id_furnizor) references FURNIZOR(id_furnizor)
+    );
+    
+INSERT INTO PIESA VALUES('40000', 'Bujie', 'Renault', '30004');
+INSERT INTO PIESA VALUES('40001', 'Ambreiaj', 'Mercedes-Benz', '30002');
+INSERT INTO PIESA VALUES('40002', 'Bucsa', 'Volkswagen', '30001');
+INSERT INTO PIESA VALUES('40003', 'Catalizator', 'Alfa Romeo', '30003');
+INSERT INTO PIESA VALUES('40004', 'Curea transmisie', 'Porsche', '30000');
+COMMIT;
+
+SELECT* FROM PIESA;
+
+--------------------------
+
+CREATE TABLE MONTEAZA
+    (id_angajat number(6),
+    id_piesa number(6),
+    constraint pk_monteaza primary key(id_angajat, id_piesa),
+    constraint fk_monteaza_angajat foreign key(id_angajat) references ANGAJAT(id_angajat),
+    constraint fk_monteaza_piesa foreign key(id_piesa) references PIESA(id_piesa)
+    );
+    
+INSERT INTO MONTEAZA VALUES('1000', '40000');
+INSERT INTO MONTEAZA VALUES('1000', '40003');
+INSERT INTO MONTEAZA VALUES('1001', '40002');
+INSERT INTO MONTEAZA VALUES('1001', '40001');
+INSERT INTO MONTEAZA VALUES('1002', '40002');
+INSERT INTO MONTEAZA VALUES('1003', '40001');
+INSERT INTO MONTEAZA VALUES('1005', '40003');
+INSERT INTO MONTEAZA VALUES('1007', '40004');
+INSERT INTO MONTEAZA VALUES('1006', '40000');
+INSERT INTO MONTEAZA VALUES('1010', '40001');
+INSERT INTO MONTEAZA VALUES('1013', '40000');
+
+COMMIT;
+
+SELECT* FROM MONTEAZA;
+
+------------------------
+
+
+CREATE TABLE REPARA 
+    (id_angajat number(6),
+    id_masina number(6),
+    id_client number(6),
+    constraint pk_repara primary key(id_angajat, id_masina, id_client),
+    constraint fk_repara_angajat foreign key(id_angajat) references ANGAJAT(id_angajat),
+    constraint fk_repara_client foreign key(id_client) references CLIENTS(id_client),
+    constraint fk_repara_masina foreign key(id_masina) references MASINA(id_masina)
+    );
+    
+INSERT INTO REPARA VALUES('1001', '10100', '10003');
+INSERT INTO REPARA VALUES('1000', '10101', '10002');
+INSERT INTO REPARA VALUES('1002', '10102', '10000');
+INSERT INTO REPARA VALUES('1003', '10103', '10001');
+INSERT INTO REPARA VALUES('1005', '10104', '10004');
+INSERT INTO REPARA VALUES('1006', '10105', '10002');
+INSERT INTO REPARA VALUES('1007', '10106', '10001');
+INSERT INTO REPARA VALUES('1008', '10107', '10000');
+INSERT INTO REPARA VALUES('1012', '10104', '10003');
+INSERT INTO REPARA VALUES('1013', '10102', '10004');
+COMMIT;
+
+SELECT* FROM REPARA;
+
+
+--6
+--Afisati pe ecran codurile angajatilor unui service (ce are id-ul dat ca parametru) 
+--si care au montat cel putin o piesa care provine de la un furnizor ce a semnat 
+--un contract pe o durata strict mai mare de 3 ani.
+--Afisati intai codurile tuturor angajatilor si ale tuturor pieselor care respecta cerintele. 
+--Afisati apoi perechile id(angajat, piesa) care respecta cerinta.
+
+  
+CREATE OR REPLACE PROCEDURE angajat_piesa(cod_service services.id_service%TYPE)
+    IS 
+        TYPE tablou_imbricat IS TABLE OF piesa.id_piesa%TYPE;
+        tablou_piese tablou_imbricat := tablou_imbricat();
+        
+        TYPE vector_angajati IS VARRAY(30) OF angajat.id_angajat%TYPE;
+        vector_ang vector_angajati := vector_angajati();
+        
+        contor NUMBER(3) := 0;
+        ang monteaza.id_angajat%TYPE;
+        pie monteaza.id_piesa%TYPE;
+        v_a NUMBER(1) := 0;
+        v_p NUMBER(1) := 0;
+        
+    BEGIN
+        
+        SELECT id_piesa
+        BULK COLLECT INTO tablou_piese
+        FROM piesa JOIN furnizor USING(id_furnizor)
+                   JOIN contract USING(id_contract)
+        WHERE durata > 3;
+        
+        SELECT id_angajat
+        BULK COLLECT INTO vector_ang
+        FROM angajat
+        WHERE id_service = cod_service;
+        DBMS_OUTPUT.PUT_LINE('Codurile angajatilor care lucreaza la service-ul cu codul '|| cod_service||' sunt: ');
+        FOR i IN vector_ang.FIRST..vector_ang.LAST LOOP
+            DBMS_OUTPUT.PUT_LINE(vector_ang(i));
+        END LOOP;
+        DBMS_OUTPUT.PUT_LINE('Codurile pieselor care provin de la furnizori ce au semnat un contract pe o durata mai mare de 3 ani sunt:');
+        FOR i IN tablou_piese.FIRST..tablou_piese.LAST LOOP
+            DBMS_OUTPUT.PUT_LINE(tablou_piese(i));
+        END LOOP;
+        
+        SELECT COUNT(*) 
+        INTO contor
+        FROM monteaza;
+        
+        FOR i IN 1..contor LOOP
+            v_a := 0;
+            v_p := 0;
+            
+        SELECT id_angajat, id_piesa INTO ang, pie
+        FROM ( SELECT id_angajat,id_piesa, ROWNUM AS rn 
+                    FROM (SELECT id_angajat, id_piesa 
+                          FROM monteaza ORDER BY id_angajat)) WHERE rn = i;
+            FOR j IN vector_ang.FIRST..vector_ang.LAST LOOP
+                IF vector_ang(j) = ang THEN
+                    v_a := 1;
+                END IF;
+            END LOOP;
+            FOR k IN tablou_piese.FIRST..tablou_piese.LAST LOOP
+                IF tablou_piese(k) = pie THEN
+                    v_p := 1;
+                END IF;
+            END LOOP;
+            IF v_a = 1 AND v_p = 1 THEN
+                DBMS_OUTPUT.PUT_LINE('Angajatul cu codul ' || ang|| ' a montat piesa cu codul ' || pie);
+            END IF;
+            
+        END LOOP;
+        
+END angajat_piesa;
+        
+BEGIN
+angajat_piesa(102);
+END;
+
+--7
+--Obtineti (printr-o procedura stocata) codul, numele, prenumele, salariul 
+--si numele service-ului in care lucreaza angajatii care au un job al carui nume 
+--este dat ca parametru, au salariul mai mare de 10000 si lucreaza intr-un service al carui nume incepe cu 'B'.
+
+CREATE OR REPLACE PROCEDURE angajati_service(nume jobs.nume_job%TYPE)
+    IS 
+        CURSOR c IS 
+            (SELECT id_angajat, nume_angajat, prenume_angajat, nume_service, salariu
+                FROM angajat JOIN services USING(id_service) JOIN jobs USING(id_job)
+                WHERE UPPER(nume_job) = UPPER(nume) AND salariu > 10000);
+    BEGIN
+        FOR i IN c LOOP
+            IF UPPER(i.nume_service) LIKE 'B%' THEN 
+                DBMS_OUTPUT.PUT_LINE('Angajatul cu codul ' ||i.id_angajat|| ' si numele '||i.nume_angajat||' '||i.prenume_angajat|| ' are salariul ' || i.salariu ||' si lucreaza la service-ul '||i.nume_service);
+            END IF;
+        END LOOP;
+END angajati_service;
+
+BEGIN
+angajati_service('Mecanic');
+END;
+
+--8
+--Obtineti localitatea in care lucreaza un angajat al carui nume este dat ca parametru.
+
+CREATE OR REPLACE FUNCTION oras_angajat(nume angajat.nume_angajat%TYPE)
+    RETURN locatie.localitate%TYPE IS 
+    v_localitate locatie.localitate%TYPE;
+    BEGIN
+        SELECT localitate INTO v_localitate
+            FROM angajat JOIN services USING(id_service) JOIN locatie USING(id_locatie)
+            WHERE UPPER(nume_angajat) = UPPER(nume);
+    RETURN v_localitate;
+    EXCEPTION 
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20000, 'Nu exista niciun angajat cu acest nume!');
+        WHEN TOO_MANY_ROWS THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Exista mai multi angajati cu acest nume!');
+        WHEN OTHERS THEN
+            RAISE_APPLICATION_ERROR(-20002, 'A aparut alta eroare!');
+END oras_angajat;
+
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(oras_angajat('Mircescu')); --  nicio eroare
+END;
+
+BEGIN 
+    DBMS_OUTPUT.PUT_LINE(oras_angajat('Raducanu')); -- eroare NO_DATA_FOUND
+END;
+
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(oras_angajat('Enescu')); -- eroare TOO_MANY_ROWS
+END;
+
+--9
+--Obtineti data inceperii contractului prin care se furnizeaza piesa al carui nume 
+--este dat ca parametru si care este montata de cel mai bine platit angajat dintre 
+--cei care au montat acel tip de piesa.
+
+CREATE OR REPLACE PROCEDURE piesa_angajat(v_nume_piesa piesa.nume_piesa%TYPE)
+    IS 
+        v_data_incepere contract.data_incepere%TYPE;
+        v_max_salariu angajat.salariu%TYPE;
+    BEGIN
+        SELECT MAX(salariu) INTO v_max_salariu
+        FROM angajat JOIN monteaza USING(id_angajat)
+                     JOIN piesa USING(id_piesa)
+        WHERE UPPER(nume_piesa) = UPPER(v_nume_piesa);
+        
+        SELECT data_incepere INTO v_data_incepere
+        FROM contract JOIN furnizor USING(id_contract)
+                      JOIN piesa USING(id_furnizor)
+                      JOIN monteaza USING(id_piesa)
+                      JOIN angajat USING(id_angajat)
+        WHERE UPPER(nume_piesa) = UPPER(v_nume_piesa) AND salariu = v_max_salariu; 
+        
+        DBMS_OUTPUT.PUT_LINE('Data cautata este: '||v_data_incepere);
+    EXCEPTION 
+        WHEN NO_DATA_FOUND THEN 
+            RAISE_APPLICATION_ERROR(-20000, 'Nu exista angajat care sa fi montat piesa cu acest nume!');
+        WHEN TOO_MANY_ROWS THEN 
+            RAISE_APPLICATION_ERROR(-20001, 'Exista prea multi angajati care au salariul maxim si au montat aceasta piesa!');
+        WHEN OTHERS THEN
+            RAISE_APPLICATION_ERROR(-20002, 'A aparut alta eroare!');
+END piesa_angajat;
+
+BEGIN
+piesa_angajat('acceleratie'); -- eroare no data found
+END;
+
+BEGIN
+piesa_angajat('bujie'); --eroare too many rows
+END;
+
+BEGIN
+piesa_angajat('curea transmisie'); --nicio eroare
+END;
+
+--10
+--Creati un trigger prin care sa nu se poata modifica tabelul 'angajat' decat intre orele 8-16 de luni pana vineri.
+
+CREATE OR REPLACE TRIGGER actualizare_ang
+    BEFORE INSERT OR UPDATE OR DELETE ON angajat
+BEGIN 
+    IF (TO_CHAR(SYSDATE,'D') = 7) OR (TO_CHAR(SYSDATE,'D') = 6) OR (TO_CHAR(SYSDATE,'HH24') NOT BETWEEN 8 AND 16)THEN 
+        IF INSERTING THEN
+            RAISE_APPLICATION_ERROR(-20001,'Nu se poate insera in tabel in afara programului');
+
+        ELSIF UPDATING THEN
+            RAISE_APPLICATION_ERROR(-20002,'Nu se poate actualiza tabelul in afara programului');
+        
+        ELSE 
+            RAISE_APPLICATION_ERROR(-20003,'Nu se poate sterge din tabel in afara programului');
+        END IF;
+    END IF;
+END;
+
+--INSERT INTO angajat VALUES(1023, 'raducanu','andrei',3000,sysdate, 108, 502);
+
+--UPDATE angajat SET salariu = salariu/2;
+
+--DELETE FROM angajat WHERE id_angajat = 1005;
+
+
+--11
+--Creati un trigger prin care sa nu se poata adauga un anagajat care are 
+--salariul necorespunzator grilei de salarizare specifica job-ului avut.
+
+CREATE OR REPLACE TRIGGER salariu_angajat
+    BEFORE INSERT ON angajat
+    FOR EACH ROW
+DECLARE
+    v_sal_min jobs.salariu_min%TYPE;
+    v_sal_max jobs.salariu_max%TYPE;
+BEGIN
+    v_sal_min := -1;
+    v_sal_max := -1;
+    SELECT salariu_min, salariu_max 
+    INTO v_sal_min, v_sal_max
+    FROM JOBS
+    WHERE id_job = :NEW.id_job;
+    IF :NEW.salariu < v_sal_min OR :NEW.salariu > v_sal_max THEN
+        IF :NEW.salariu < v_sal_min THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Salariul dat este mai mic decat limita inferioara pentru acest job!');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'Salariul dat este mai mare decat limita superioara pentru acest job!');
+        END IF;
+    END IF;
+EXCEPTION 
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20003, 'Nu exista acest cod pentru tabela job, dati un id valid!');
+END;
+
+--INSERT INTO angajat VALUES(1030, 'RAD','AND',100000,'27-DEC-2000',108,500);
+
+--12
+--Creati un trigger LDD ce retine detalii in tabelul audit_ara de fiecare data 
+--cand este facuta o comanda CREATE, ALTER, DROP.
+
+CREATE TABLE audit_ara
+    (utilizator VARCHAR2(30),
+    baza_date VARCHAR2(50),
+    eveniment VARCHAR2(20), 
+    nume_obiect VARCHAR2(30),
+    data DATE);
+    
+    
+CREATE OR REPLACE TRIGGER ldd_trigger
+    AFTER CREATE OR DROP OR ALTER ON SCHEMA
+BEGIN
+    INSERT INTO audit_ara VALUES
+    (SYS.LOGIN_USER, SYS.DATABASE_NAME, SYS.SYSEVENT, SYS.DICTIONARY_OBJ_NAME, SYSDATE);
+END;
